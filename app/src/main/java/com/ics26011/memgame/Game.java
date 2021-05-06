@@ -111,7 +111,9 @@ public class Game extends AppCompatActivity {
         findViewById(R.id.exit_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                countDownTimer.cancel();
+                if (timerRunning){
+                    countDownTimer.cancel();
+                }
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         });
