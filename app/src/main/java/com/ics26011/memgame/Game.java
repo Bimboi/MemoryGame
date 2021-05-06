@@ -41,6 +41,7 @@ public class Game extends AppCompatActivity {
     private long timeLeftMilliseconds = 60000;
     private boolean timerRunning;
     private int seconds;
+    private String timeleft;
     private List<Drawable> images;
     private List<Integer> finished;
     private List<Drawable> imgPair;
@@ -48,6 +49,9 @@ public class Game extends AppCompatActivity {
     private int[] cellPair;
     private int countFinish;
     private int joker;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
+    private List<Integer> scores;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,19 @@ public class Game extends AppCompatActivity {
 
         timer = findViewById(R.id.timer);
         gameButton = findViewById(R.id.game_button);
+
+        scores = new ArrayList<>();
+        prefs = getSharedPreferences("Scores", Context.MODE_PRIVATE);
+        editor = prefs.edit();
+
+        if (!prefs.contains("1st")) {
+            // initialize keys
+            editor.putInt("1st", 0);
+            editor.putInt("2nd", 0);
+            editor.putInt("3rd", 0);
+        }
+
+        editor.apply();
 
         first = findViewById(R.id.first_cell);
         second = findViewById(R.id.second_cell);
@@ -92,6 +109,7 @@ public class Game extends AppCompatActivity {
         findViewById(R.id.exit_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                countDownTimer.cancel();
                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
             }
         });
@@ -334,38 +352,33 @@ public class Game extends AppCompatActivity {
 
             disableButtons();
 
-            if (seconds > 50){
+            if (seconds > 50) {
                 Toast.makeText(getApplicationContext(), "God-like Gamer Lezgo!", Toast.LENGTH_SHORT).show();
-            } else if (seconds > 40){
+            } else if (seconds > 40) {
                 Toast.makeText(getApplicationContext(), "That's kinda fast! Well Done!", Toast.LENGTH_SHORT).show();
-            } else if (seconds > 30){
+            } else if (seconds > 30) {
                 Toast.makeText(getApplicationContext(), "Mhm... Not bad!", Toast.LENGTH_SHORT).show();
-            } else if (seconds > 10){
+            } else if (seconds > 10) {
                 Toast.makeText(getApplicationContext(), "Congrats I guess...", Toast.LENGTH_SHORT).show();
-            } else if (seconds > 10){
+            } else if (seconds > 0) {
                 Toast.makeText(getApplicationContext(), "WOW! CONGRATULATIONS! GREAT JOB!", Toast.LENGTH_SHORT).show();
             }
 
-            SharedPreferences prefs = getSharedPreferences("Scores", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
+            scores.add(prefs.getInt("1st", 0));
+            scores.add(prefs.getInt("2nd", 0));
+            scores.add(prefs.getInt("3rd", 0));
+            scores.add(seconds);
 
-            if (!prefs.contains("1st")) {
-                // initialize keys
-                editor.putInt("1st", 0);
-                editor.putInt("2nd", 0);
-                editor.putInt("3rd", 0);
-            }
+            // sorts ascending
+            Collections.sort(scores);
 
-            // update highest time based on time left of current game
-            if (seconds > prefs.getInt("1st", 0)) {
-                editor.putInt("1st", seconds);
-            } else if (seconds > prefs.getInt("2nd", 0)) {
-                editor.putInt("2nd", seconds);
-            } else if (seconds > prefs.getInt("3rd", 0)) {
-                editor.putInt("3rd", seconds);
-            }
+            // update top three scores which is last 3 items of list
+            editor.putInt("1st", scores.get(3));
+            editor.putInt("2nd", scores.get(2));
+            editor.putInt("3rd", scores.get(1));
 
             editor.apply();
+            scores.clear();
         }
     }
 
@@ -441,6 +454,12 @@ public class Game extends AppCompatActivity {
 
             @Override
             public void onFinish() {
+                if (timeleft.equals("0:01")) {
+                    timeleft = "0:00";
+                    timer.setText(timeleft);
+                }
+                disableButtons();
+                Toast.makeText(getApplicationContext(), "Never Gonna Keep You Up", Toast.LENGTH_SHORT).show();
                 gameButton.setText("AGAIN");
             }
         }.start();
@@ -460,8 +479,6 @@ public class Game extends AppCompatActivity {
 
     private void updateTimer() {
         seconds = (int) timeLeftMilliseconds % 60000 / 1000;
-
-        String timeleft;
 
         timeleft = "0:";
         if (seconds < 10) {
