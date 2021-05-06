@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 public class Scores extends AppCompatActivity {
 
-    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,36 +20,22 @@ public class Scores extends AppCompatActivity {
         TextView firstPlace = findViewById(R.id.first_place);
         TextView secondPlace = findViewById(R.id.second_place);
         TextView thirdPlace = findViewById(R.id.third_place);
+        TextView fourthPlace = findViewById(R.id.fourth_place);
+        TextView fifthPlace = findViewById(R.id.fifth_place);
 
         SharedPreferences preferences = getSharedPreferences("Scores", MODE_PRIVATE);
 
-        int first = preferences.getInt("1st", 0);
-        int second = preferences.getInt("2nd", 0);
-        int third = preferences.getInt("3rd", 0);
+        String one = "1st";
+        String two = "2nd";
+        String three = "3rd";
+        String four = "fourth";
+        String five = "five";
 
-        if (first == 0) {
-            firstPlace.setText("-:--");
-        } else if (first < 10) {
-            firstPlace.setText("0:0" + preferences.getInt("1st", 0));
-        } else {
-            firstPlace.setText("0:" + preferences.getInt("1st", 0));
-        }
-
-        if (second == 0) {
-            secondPlace.setText("-:--");
-        } else if (second < 10) {
-            secondPlace.setText("0:0" + preferences.getInt("2nd", 0));
-        } else {
-            secondPlace.setText("0:" + preferences.getInt("2nd", 0));
-        }
-
-        if (third == 0) {
-            thirdPlace.setText("-:--");
-        } else if (third < 10) {
-            thirdPlace.setText("0:0" + preferences.getInt("3rd", 0));
-        } else {
-            thirdPlace.setText("0:" + preferences.getInt("3rd", 0));
-        }
+        setScoresText(firstPlace, preferences.getInt(one, 0));
+        setScoresText(secondPlace, preferences.getInt(two, 0));
+        setScoresText(thirdPlace, preferences.getInt(three, 0));
+        setScoresText(fourthPlace, preferences.getInt(four, 0));
+        setScoresText(fifthPlace, preferences.getInt(five, 0));
 
         findViewById(R.id.exit_score_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,5 +43,16 @@ public class Scores extends AppCompatActivity {
                 onBackPressed();
             }
         });
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setScoresText(TextView btn, int score){
+        if (score == 0) {
+            btn.setText("-:--");
+        } else if (score < 10) {
+            btn.setText("0:0" + score);
+        } else {
+            btn.setText("0:" + score);
+        }
     }
 }
