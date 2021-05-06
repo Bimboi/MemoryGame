@@ -77,6 +77,8 @@ public class Game extends AppCompatActivity {
             editor.putInt("1st", 0);
             editor.putInt("2nd", 0);
             editor.putInt("3rd", 0);
+            editor.putInt("4th", 0);
+            editor.putInt("5th", 0);
         }
 
         editor.apply();
@@ -367,15 +369,19 @@ public class Game extends AppCompatActivity {
             scores.add(prefs.getInt("1st", 0));
             scores.add(prefs.getInt("2nd", 0));
             scores.add(prefs.getInt("3rd", 0));
+            scores.add(prefs.getInt("4th", 0));
+            scores.add(prefs.getInt("5th", 0));
             scores.add(seconds);
 
             // sorts ascending
             Collections.sort(scores);
 
-            // update top three scores which is last 3 items of list
-            editor.putInt("1st", scores.get(3));
-            editor.putInt("2nd", scores.get(2));
-            editor.putInt("3rd", scores.get(1));
+            // update top scores which are last items of list
+            editor.putInt("1st", scores.get(5));
+            editor.putInt("2nd", scores.get(4));
+            editor.putInt("3rd", scores.get(3));
+            editor.putInt("4th", scores.get(2));
+            editor.putInt("5th", scores.get(1));
 
             editor.apply();
             scores.clear();
